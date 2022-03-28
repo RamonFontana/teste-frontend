@@ -46,7 +46,38 @@ body {
 }
 
 .search {
-    margin: 100px auto 80px;
+    margin: 100px 30px 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    > label {
+        width: 100%;
+    }
+    @media (max-width: 768px) {
+        margin: 30px;
+    }
+}
+
+.category {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 50px;
+    margin-bottom: 60px;
+    h2 {
+        font-size: 20px;
+        width: 100%;
+        font-weight: bold;
+        margin: 10px;
+    }
+    .btn {
+        margin: 10px;
+        &.active {
+            background-color: #f6e6bd;
+        }
+    }
+    @media (max-width: 768px) {
+        margin-top: 0;
+    }
 }
 
 .poke-card {

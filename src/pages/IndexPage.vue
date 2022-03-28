@@ -1,31 +1,40 @@
 <template>
-  <q-page>
-    <div class="col-12 full-width">
-      <div class="row">
-        <div class="col-md-8 search">
-          <q-input
-            bottom-slots
-            v-model="textSearch"
-            :label="
-              language == 'pt' ? portuguese.labelSearch : english.labelSearch
+  <q-page class="row">
+    <div class="col-md-7 search">
+      <q-input
+        bottom-slots
+        v-model="textSearch"
+        :label="language == 'pt' ? portuguese.labelSearch : english.labelSearch"
+        :dense="dense"
+        @keyup="filterPokemons"
+      >
+        <template v-slot:append>
+          <q-icon
+            v-if="textSearch !== ''"
+            name="close"
+            @click="
+              textSearch = '';
+              this.pokeSearch = {};
             "
-            :dense="dense"
-            @keyup="filterPokemons"
-          >
-            <template v-slot:append>
-              <q-icon
-                v-if="textSearch !== ''"
-                name="close"
-                @click="
-                  textSearch = '';
-                  this.pokeSearch = {};
-                "
-                class="cursor-pointer"
-              />
-            </template>
-          </q-input>
-        </div>
-      </div>
+            class="cursor-pointer"
+          />
+        </template>
+      </q-input>
+    </div>
+    <div class="col-md-4 category">
+      <h2>Filtrar por tipo de Pokemon</h2>
+      <q-btn
+        class="btn"
+        v-for="(name, key) in this.typePoke"
+        :key="name"
+        :id="'pokeType' + key"
+        @click="filterPokemonsByType(key)"
+        >{{
+          language == "pt"
+            ? portuguese.typePoke[key].label
+            : english.typePoke[key].label
+        }}</q-btn
+      >
     </div>
 
     <div
@@ -114,6 +123,7 @@ export default defineComponent({
     api
       .get("pokemon?limit=151")
       .then((response) => {
+        console.log(response);
         this.pokeList = response.data.results;
       })
       .catch((error) => {
@@ -125,6 +135,28 @@ export default defineComponent({
     return {
       pokeList: {},
       pokeSearch: {},
+      typePoke: [
+        "normal",
+        "fighting",
+        "flying",
+        "poison",
+        "ground",
+        "rock",
+        "bug",
+        "ghost",
+        "steel",
+        "fire",
+        "water",
+        "grass",
+        "electric",
+        "psychic",
+        "ice",
+        "dragon",
+        "dark",
+        "fairy",
+        "unknown",
+        "shadow",
+      ],
     };
   },
   computed: {
@@ -143,9 +175,27 @@ export default defineComponent({
         if (!pokemon.name.indexOf(this.textSearch)) {
           return pokemon;
         } else if (this.textSearch == "") {
-          this.pokeSearch = {};
+          return {};
         }
       });
+    },
+    filterPokemonsByType(id) {
+      let elems = document.querySelectorAll(".category .btn");
+      [].forEach.call(elems, function (el) {
+        el.className = el.className.replace(/\bactive\b/, "");
+      });
+      let typeElem = document.getElementById("pokeType" + id);
+      typeElem.classList.add("active");
+      api
+        .get("type/" + id)
+        .then((response) => {
+          this.pokeSearch = response.data.pokemon.map((item) => {
+            return { name: item.pokemon.name, url: item.pokemon.url };
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 });
