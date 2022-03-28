@@ -5,7 +5,7 @@
       <h1>{{ $route.params.name }}</h1>
     </div>
     <div class="text-center">
-      <h2>Informações</h2>
+      <h2>{{ language == "pt" ? portuguese.info : english.info }}</h2>
       <div class="weight">
         <p>
           {{ language == "pt" ? portuguese.weightLabel : english.weightLabel }}:
